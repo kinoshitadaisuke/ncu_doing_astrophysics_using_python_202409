@@ -1,6 +1,6 @@
 # Doing Astrophysics using Python
 
-Time-stamp: <2024/09/02 10:35:35 (UT+8) daisuke>
+Time-stamp: <2024/09/02 10:36:38 (UT+8) daisuke>
 
 This is a repository for the course "Doing Astrophysics using Python" (course ID: PH3066) offered at National Central University in Taiwan Central University from Sep/2024 to Jan/2025. from Sep/2024 to Jan/2025.
 
@@ -46,11 +46,11 @@ git clone https://github.com/kinoshitadaisuke/ncu_doing_astrophysics_using_pytho
 |30/Oct/2024|15:00-17:50|08|Blackbody radiation|
 |06/Nov/2024|15:00-17:50|09|Distribution of asteroids, stars, and galaxies|
 |13/Nov/2024|15:00-17:50|10|Hubble diagram and expansion of the Universe|
-|20/Nov/2024|15:00-17:50|11|no class|
-|27/Nov/2024|15:00-17:50|12|Estimating ages of star clusters|
-|04/Dec/2024|15:00-17:50|13|Periodicity analysis of astronomical time-series data|
-|11/Dec/2024|15:00-17:50|14|Source extraction and image alignment of astronomical images|
-|18/Dec/2024|15:00-17:50|15|Planetary motion and orbital integration|
-|25/Dec/2024|15:00-17:50|16|Classification of astronomical objects using machine learning|
-|01/Jan/2025|15:00-17:50|17|TBA|
-|08/Jan/2025|15:00-17:50|18|TBA|
+|20/Nov/2024|15:00-17:50|---|no class|
+|27/Nov/2024|15:00-17:50|11|Estimating ages of star clusters|
+|04/Dec/2024|15:00-17:50|12|Periodicity analysis of astronomical time-series data|
+|11/Dec/2024|15:00-17:50|13|Source extraction and image alignment of astronomical images|
+|18/Dec/2024|15:00-17:50|14|Planetary motion and orbital integration|
+|25/Dec/2024|15:00-17:50|15|Classification of astronomical objects using machine learning|
+|01/Jan/2025|15:00-17:50|16|TBA|
+|08/Jan/2025|15:00-17:50|17|TBA|
