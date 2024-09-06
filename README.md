@@ -1,6 +1,6 @@
 # Doing Astrophysics using Python
 
-Time-stamp: <2024/09/02 10:47:15 (UT+8) daisuke>
+Time-stamp: <2024/09/06 11:02:43 (UT+8) daisuke>
 
 This is a repository for the course "Doing Astrophysics using Python" (course ID: PH3066) offered at National Central University in Taiwan Central University from Sep/2024 to Jan/2025. from Sep/2024 to Jan/2025.
 
@@ -15,6 +15,10 @@ This is a repository for the course "Doing Astrophysics using Python" (course ID
   - time: from 13:00 to 15:50 on Wednesday
   - instructor: Kinoshita Daisuke
     - emergency contact address: https://www.instagram.com/daisuke23888/
+  - things you need to bring to the classrooms
+    - laptop computer or tablet computer
+    - notebook and pens
+    - mobile phone
 
 ## Online resources
 
