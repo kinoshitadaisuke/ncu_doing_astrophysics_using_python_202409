@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/10/07 16:05:38 (UT+8) daisuke>
+# Time-stamp: <2024/10/09 09:28:53 (UT+8) daisuke>
 #
 
 # importing numpy module
@@ -19,9 +19,9 @@ def curve (x):
     return (y)
 
 # numerical integration
-#   numpy.NINF = negative infinity
-#   numpy.PINF = positive infinity
-result0 = scipy.integrate.quad (curve, numpy.NINF, numpy.PINF)
+#  -numpy.inf = negative infinity
+#   numpy.inf = positive infinity
+result0 = scipy.integrate.quad (curve, -numpy.inf, numpy.inf)
 result1 = scipy.integrate.quad (curve, -1.0, +1.0)
 result2 = scipy.integrate.quad (curve, -2.0, +2.0)
 result3 = scipy.integrate.quad (curve, -3.0, +3.0)
