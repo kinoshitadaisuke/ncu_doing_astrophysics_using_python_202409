@@ -1,6 +1,6 @@
 # Doing Astrophysics using Python
 
-Time-stamp: <2024/10/09 10:29:24 (UT+8) daisuke>
+Time-stamp: <2024/10/16 09:21:00 (UT+8) daisuke>
 
 This is a repository for the course "Doing Astrophysics using Python" (course ID: PH3066) offered at National Central University in Taiwan Central University from Sep/2024 to Jan/2025. from Sep/2024 to Jan/2025.
 
@@ -73,3 +73,5 @@ git clone https://github.com/kinoshitadaisuke/ncu_doing_astrophysics_using_pytho
   - https://colab.research.google.com/drive/1xHYu4-TBOntRTkpuKAiMt_sFyHb-UAWY?usp=sharing
 - Session 05
   - https://colab.research.google.com/drive/1Hi2fPLI1vYFWLpxozIZpt4TjGU0z-U84?usp=sharing
+- Session 06
+  - https://colab.research.google.com/drive/1L8DiiDXv67FCNo3FsMbCwVyxdHFfpD6k?usp=sharing
