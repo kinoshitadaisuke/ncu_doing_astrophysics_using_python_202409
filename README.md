@@ -1,6 +1,6 @@
 # Doing Astrophysics using Python
 
-Time-stamp: <2024/11/06 10:24:33 (UT+8) daisuke>
+Time-stamp: <2024/11/13 16:17:04 (UT+8) daisuke>
 
 This is a repository for the course "Doing Astrophysics using Python" (course ID: PH3066) offered at National Central University in Taiwan Central University from Sep/2024 to Jan/2025. from Sep/2024 to Jan/2025.
 
@@ -50,8 +50,8 @@ git clone https://github.com/kinoshitadaisuke/ncu_doing_astrophysics_using_pytho
 |30/Oct/2024|13:00-15:50|07|Astronomical calculations using Astropy|
 |06/Nov/2024|13:00-15:50|08|Blackbody radiation|
 |13/Nov/2024|13:00-15:50|09|Distribution of asteroids, stars, and galaxies|
-|20/Nov/2024|13:00-15:50|10|Hubble diagram and expansion of the Universe|
-|27/Nov/2024|13:00-15:50|---|no class due to University's sport day|
+|20/Nov/2024|13:00-15:50|---|no class due to University's sport day|
+|27/Nov/2024|13:00-15:50|10|Hubble diagram and expansion of the Universe|
 |04/Dec/2024|13:00-15:50|11|Estimating ages of star clusters|
 |11/Dec/2024|13:00-15:50|12|Periodicity analysis of astronomical time-series data|
 |18/Dec/2024|13:00-15:50|13|Source extraction and image alignment of astronomical images|
