@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/11/20 12:09:59 (UT+8) daisuke>
+# Time-stamp: <2024/11/21 20:56:27 (UT+8) daisuke>
 #
 
 # importing astropy module
@@ -38,5 +38,5 @@ dec_dms = coord.dec.to_string (u_deg, alwayssign=True)
 
 # printing result
 print (f"target: {target}")
-print (f" RA  = {ra_hms:>18s} = {ra_deg:10.6f} deg")
-print (f" Dec = {dec_dms:>18s} = {dec_deg:+10.6f} deg")
+print (f" RA  = {ra_hms:>20s} = {ra_deg:10.6f} deg")
+print (f" Dec = {dec_dms:>20s} = {dec_deg:+10.6f} deg")
