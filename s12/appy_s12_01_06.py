@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/05/05 16:27:19 (UT+8) daisuke>
+# Time-stamp: <2024/12/03 13:57:04 (UT+8) daisuke>
 #
 
 # importing numpy module
@@ -21,8 +21,8 @@ file_input = 'appy_s12_01_02.data'
 file_output = 'appy_s12_01_06.png'
 
 # range of data for fitting
-x_min = 7.4
-x_max = 7.6
+x_min = 7.35
+x_max = 7.65
 
 # empty numpy array for storing data
 data_all_per = numpy.array ([])
@@ -43,7 +43,7 @@ with open (file_input, 'r') as fh:
         (per_day_str, per_hr_str, per_min_str, var_str) = line.split ()
         # conversion from string into float
         per_hr = float (per_hr_str)
-        var = float (var_str)
+        var    = float (var_str)
         # appending the data at the end of numpy arrays
         data_all_per = numpy.append (data_all_per, per_hr)
         data_all_var = numpy.append (data_all_var, var)
@@ -52,9 +52,9 @@ with open (file_input, 'r') as fh:
             data_fit_var = numpy.append (data_fit_var, var)
 
 # initial values of coefficients of fitted function
-a = 1.0
-b = 1.0
-c = 1.0
+a = 5.0
+b = 10.0
+c = 0.0
 
 # function to be used for least-squares fitting
 def func (x, a, b, c):
@@ -62,7 +62,8 @@ def func (x, a, b, c):
     return y
 
 # least-squares fitting using scipy.optimize.curve_fit
-popt, pcov = scipy.optimize.curve_fit (func, data_fit_per, data_fit_var)
+popt, pcov = scipy.optimize.curve_fit (func, data_fit_per, data_fit_var, \
+                                       maxfev=1000)
 
 # fitted coefficients
 print ("popt:")
