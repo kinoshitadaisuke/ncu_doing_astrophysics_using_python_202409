@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/05/03 10:44:17 (UT+8) daisuke>
+# Time-stamp: <2024/12/03 13:14:03 (UT+8) daisuke>
 #
 
 # importing numpy module
@@ -25,7 +25,7 @@ file_data = 'appy_s12_00_00.data'
 file_output = 'appy_s12_00_02.png'
 
 # trial period
-p_hr = 1.0 * u_hr
+p_hr  = 1.0 * u_hr
 p_day = p_hr.to (u_day)
 
 # empty numpy arrays for storing data
