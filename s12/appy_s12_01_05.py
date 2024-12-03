@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/05/05 16:11:43 (UT+8) daisuke>
+# Time-stamp: <2024/12/03 13:54:41 (UT+8) daisuke>
 #
 
 # importing numpy module
@@ -21,8 +21,8 @@ file_input = 'appy_s12_01_02.data'
 file_output = 'appy_s12_01_05.png'
 
 # range of data for fitting
-x_min = 7.3
-x_max = 7.7
+x_min = 7.0
+x_max = 8.0
 
 # empty numpy array for storing data
 data_all_per = numpy.array ([])
