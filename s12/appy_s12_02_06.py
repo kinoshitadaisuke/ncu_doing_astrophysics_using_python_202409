@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/05/03 11:58:25 (UT+8) daisuke>
+# Time-stamp: <2024/12/04 12:12:45 (UT+8) daisuke>
 #
 
 # importing numpy module
@@ -12,10 +12,14 @@ import matplotlib.figure
 import matplotlib.backends.backend_agg
 
 # input file name
-file_input = 'appy_s12_02_02.data'
+file_input = 'appy_s12_02_03.data'
 
 # output file name
 file_output = 'appy_s12_02_06.png'
+
+# range of x on the plot
+x_min = 3.0
+x_max = 10.0
 
 # empty numpy arrays for storing data
 data_per = numpy.array ([])
@@ -45,14 +49,14 @@ canvas = matplotlib.backends.backend_agg.FigureCanvasAgg (fig)
 ax     = fig.add_subplot (111)
 
 # labels
-ax.set_xlabel ('Period [hr]')
+ax.set_xlabel ('Frequency [cycle/day]')
 ax.set_ylabel ('Variance')
 
-# axes
-ax.set_xlim (3.10, 3.25)
+# range
+ax.set_xlim (x_min, x_max)
 
 # plotting data
-ax.plot (data_per, data_var, \
+ax.plot (24.0 / data_per, data_var, \
          linestyle='-', linewidth=3, color='blue', \
          label='result of PDM analysis')
 ax.legend ()
