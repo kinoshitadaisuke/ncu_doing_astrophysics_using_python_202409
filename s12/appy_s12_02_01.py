@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/05/03 11:43:17 (UT+8) daisuke>
+# Time-stamp: <2024/12/04 11:55:31 (UT+8) daisuke>
 #
 
 # importing numpy module
@@ -48,10 +48,6 @@ with open (file_input, 'r') as fh:
         mag_app  = float (mag_app_str)
         mag_abs  = float (mag_abs_str)
 
-        # only the data taken on 17 Feb are used for plotting
-        if not ( (month_str == 'Feb') and (day_str[0:2] == '17') ):
-            continue
-        
         # appending the data at the end of numpy arrays
         data_jd      = numpy.append (data_jd, jd)
         data_mag_app = numpy.append (data_mag_app, mag_app)
