@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/05/03 11:46:23 (UT+8) daisuke>
+# Time-stamp: <2024/12/04 11:57:05 (UT+8) daisuke>
 #
 
 # importing numpy module
@@ -11,26 +11,11 @@ import numpy
 import matplotlib.figure
 import matplotlib.backends.backend_agg
 
-# input file name
+# input file
 file_input = '201498.tb2.txt'
 
-# output file name
-file_output = 'appy_s12_02_02.data'
-
-# shortest trial period in minute and in day
-period_min_min = 10.0
-period_min_day = period_min_min / (60.0 * 24.0)
-
-# longest trial period in minute and in day
-period_max_min = 1000.0
-period_max_day = period_max_min / (60.0 * 24.0)
-
-# step size of trial period in minute and in day
-step_min = 0.01
-step_day = step_min / (60.0 * 24.0)
-
-# number of bins
-n_bins = 10
+# output file
+file_output = 'appy_s12_02_02.png'
 
 # numpy arrays to store data
 data_jd      = numpy.array ([])
@@ -63,71 +48,32 @@ with open (file_input, 'r') as fh:
         mag_app  = float (mag_app_str)
         mag_abs  = float (mag_abs_str)
 
+        # only the data taken on 17 Feb are used for plotting
+        if not ( (month_str == 'Feb') and (day_str[0:2] == '17') ):
+            continue
+        
         # appending the data at the end of numpy arrays
         data_jd      = numpy.append (data_jd, jd)
         data_mag_app = numpy.append (data_mag_app, mag_app)
         data_mag_abs = numpy.append (data_mag_abs, mag_abs)
-
-# opening file for writing
-with open (file_output, 'w') as fh_out:
-    # writing header to output file
-    header  = f"#\n"
-    header += f"# parameters for PDM analysis\n"
-    header += f"#\n"
-    header += f"# input file                = {file_input}\n"
-    header += f"# output file               = {file_output}\n"
-    header += f"# shortest trial period     = {period_min_min} min\n"
-    header += f"# longest trial period      = {period_max_min} min\n"
-    header += f"# step size of trial period = {step_min} min\n"
-    header += f"# number of bins            = {n_bins}\n"
-    header += f"#\n"
-    header += f"# results of PDM analysis\n"
-    header += f"#\n"
-    header += f"# trial period (day), trial period (hr), trial period (min), "
-    header += f"total variance\n"
-    header += f"#\n"
-    fh_out.write (header)
-
-    # initial value of trial period
-    period_day = period_min_day
-
-    # period search
-    while (period_day < period_max_day):
-        # calculation of phase with assumed period
-        data_phase = numpy.array ([])
-        for i in range ( len (data_jd) ):
-            phase       = (data_jd[i] - data_jd[0]) / period_day
-            phase      -= int (phase)
-            data_phase  = numpy.append (data_phase, phase)
-
-        # initialization of parameter
-        total_variance = 0.0
         
-        # calculation of variance
-        for i in range (n_bins):
-            # range of bin
-            bin_min = i / n_bins
-            bin_max = (i + 1) / n_bins
+# making fig and ax
+fig    = matplotlib.figure.Figure ()
+canvas = matplotlib.backends.backend_agg.FigureCanvasAgg (fig)
+ax     = fig.add_subplot (111)
 
-            # finding data within the bin
-            data_bin = numpy.array ([])
-            for j in range ( len (data_phase) ):
-                if ( (data_phase[j] >= bin_min) and (data_phase[j] < bin_max) ):
-                    data_bin = numpy.append (data_bin, data_mag_abs[j])
+# labels
+ax.set_xlabel ('JD - 2450000')
+ax.set_ylabel ('R-band Absolute Magnitude [mag]')
 
-            # if no data in the bin, then we skip.
-            if (len (data_bin) == 0):
-                continue
+# axes
+ax.invert_yaxis ()
 
-            # variance
-            variance_in_bin = numpy.var (data_bin)
-            # sum of variance
-            total_variance += variance_in_bin
+# plotting a figure
+ax.plot (data_jd, data_mag_abs, \
+         linestyle='None', marker='o', markersize=3, color='red', \
+         label='(20000) Varuna')
+ax.legend ()
 
-        # writing data to file
-        output = f"{period_day:12.10f} {period_day * 24.0:12.8f} " \
-            + f"{period_day * 24.0 * 60.0:12.6f} {total_variance:10.6f}\n"
-        fh_out.write (output)
-
-        # next trial period
-        period_day += step_day
+# saving the figure to a file
+fig.savefig (file_output, dpi=150)
