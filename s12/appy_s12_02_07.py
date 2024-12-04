@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/05/03 11:59:13 (UT+8) daisuke>
+# Time-stamp: <2024/12/04 12:14:38 (UT+8) daisuke>
 #
 
 # importing numpy module
@@ -12,7 +12,7 @@ import matplotlib.figure
 import matplotlib.backends.backend_agg
 
 # input file name
-file_input = 'appy_s12_02_02.data'
+file_input = 'appy_s12_02_03.data'
 
 # output file name
 file_output = 'appy_s12_02_07.png'
@@ -49,8 +49,7 @@ ax.set_xlabel ('Period [hr]')
 ax.set_ylabel ('Variance')
 
 # axes
-ax.set_xlim (3.15, 3.19)
-ax.set_ylim (0.00, 0.12)
+ax.set_xlim (3.10, 3.25)
 
 # plotting data
 ax.plot (data_per, data_var, \
