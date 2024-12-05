@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/05/03 13:09:06 (UT+8) daisuke>
+# Time-stamp: <2024/12/05 12:37:40 (UT+8) daisuke>
 #
 
 # importing numpy module
@@ -11,20 +11,15 @@ import numpy
 import matplotlib.figure
 import matplotlib.backends.backend_agg
 
-# data file name
-file_input = 'linear/4672469.dat'
+# input file name
+file_input = 'appy_s12_03_08.data'
 
 # output file name
 file_output = 'appy_s12_03_09.png'
 
-# best fit period (day)
-p_best = 13.204242 / 24.0
-
 # empty numpy arrays for storing data
-data_mjd   = numpy.array ([])
-data_phase = numpy.array ([])
-data_mag   = numpy.array ([])
-data_err   = numpy.array ([])
+data_per = numpy.array ([])
+data_var = numpy.array ([])
 
 # opening file
 with open (file_input, 'r') as fh:
@@ -36,17 +31,13 @@ with open (file_input, 'r') as fh:
         # removing line feed at the end of line
         line = line.strip ()
         # splitting data
-        (mjd_str, mag_str, err_str) = line.split ()
+        (per_day_str, per_hr_str, per_min_str, var_str) = line.split ()
         # conversion from string into float
-        mjd   = float (mjd_str)
-        mag   = float (mag_str)
-        err   = float (err_str)
-        phase = mjd / p_best - int (mjd / p_best)
+        per_hr = float (per_hr_str)
+        var    = float (var_str)
         # appending the data at the end of numpy arrays
-        data_mjd   = numpy.append (data_mjd, mjd)
-        data_phase = numpy.append (data_phase, phase)
-        data_mag   = numpy.append (data_mag, mag)
-        data_err   = numpy.append (data_err, err)
+        data_per = numpy.append (data_per, per_hr)
+        data_var = numpy.append (data_var, var)
 
 # making objects "fig" and "ax"
 fig    = matplotlib.figure.Figure ()
@@ -54,21 +45,16 @@ canvas = matplotlib.backends.backend_agg.FigureCanvasAgg (fig)
 ax     = fig.add_subplot (111)
 
 # labels
-ax.set_xlabel ('Phase')
-ax.set_ylabel ('Apparent Magnitude [mag]')
+ax.set_xlabel ('Period [hr]')
+ax.set_ylabel ('Variance')
 
 # axes
-ax.set_ylim (15.2, 17.0)
-ax.invert_yaxis ()
+ax.set_xlim (13.19, 13.22)
 
 # plotting data
-ax.errorbar (data_phase, data_mag, yerr=data_err, \
-             linestyle='None', marker='o', markersize=5, color='green', \
-             ecolor='black', capsize=5, \
-             label='folded lightcurve')
-ax.errorbar (data_phase + 1, data_mag, yerr=data_err, \
-             linestyle='None', marker='o', markersize=5, color='green', \
-             ecolor='black', capsize=5)
+ax.plot (data_per, data_var, \
+         linestyle='-', linewidth=3, color='blue', \
+         label='result of PDM analysis')
 ax.legend ()
 
 # saving the plot into a file
