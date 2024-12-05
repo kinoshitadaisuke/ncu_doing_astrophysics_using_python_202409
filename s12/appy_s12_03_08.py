@@ -1,36 +1,43 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/05/03 13:08:11 (UT+8) daisuke>
+# Time-stamp: <2024/12/05 12:30:47 (UT+8) daisuke>
 #
 
 # importing numpy module
 import numpy
 
-# importing scipy module
-import scipy.optimize
-
 # importing matplotlib module
 import matplotlib.figure
 import matplotlib.backends.backend_agg
 
-# input data file
-file_input = 'appy_s12_03_06.data'
+# input file name
+file_input = 'linear/4672469.dat'
 
-# output figure file
-file_output = 'appy_s12_03_08.png'
+# output file name
+file_output = 'appy_s12_03_08.data'
 
-# range of data for fitting
-x_min = 13.2038
-x_max = 13.2047
+# shortest trial period
+period_min_min = 785.0
+period_min_day = period_min_min / (60.0 * 24.0)
 
-# empty numpy array for storing data
-data_all_per = numpy.array ([])
-data_all_var = numpy.array ([])
-data_fit_per = numpy.array ([])
-data_fit_var = numpy.array ([])
+# longest trial period
+period_max_min = 800.0
+period_max_day = period_max_min / (60.0 * 24.0)
 
-# opening file for reading
+# step size of trial period
+step_min = 0.002
+step_day = step_min / (60.0 * 24.0)
+
+# number of bins
+n_bins = 40
+
+# numpy arrays for storing data
+data_mjd = numpy.array ([])
+data_mag = numpy.array ([])
+data_err = numpy.array ([])
+
+# opening file
 with open (file_input, 'r') as fh:
     # reading file line-by-line
     for line in fh:
@@ -40,87 +47,76 @@ with open (file_input, 'r') as fh:
         # removing line feed at the end of line
         line = line.strip ()
         # splitting data
-        (per_day_str, per_hr_str, per_min_str, var_str) = line.split ()
+        (mjd_str, mag_str, err_str) = line.split ()
         # conversion from string into float
-        per_hr = float (per_hr_str)
-        var    = float (var_str)
+        mjd = float (mjd_str)
+        mag = float (mag_str)
+        err = float (err_str)
         # appending the data at the end of numpy arrays
-        data_all_per = numpy.append (data_all_per, per_hr)
-        data_all_var = numpy.append (data_all_var, var)
-        if ( (per_hr >= x_min) and (per_hr <= x_max) ):
-            data_fit_per = numpy.append (data_fit_per, per_hr)
-            data_fit_var = numpy.append (data_fit_var, var)
+        data_mjd = numpy.append (data_mjd, mjd)
+        data_mag = numpy.append (data_mag, mag)
+        data_err = numpy.append (data_err, err)
 
-# initial values of coefficients of fitted function
-a    = 1000000.0
-b    = 10.0
-c    = 1.0
-init = [a, b, c]
+# opening file for writing
+with open (file_output, 'w') as fh_out:
+    # writing header to output file
+    header  = f"#\n"
+    header += f"# parameters for PDM analysis\n"
+    header += f"#\n"
+    header += f"# input file                = {file_input}\n"
+    header += f"# output file               = {file_output}\n"
+    header += f"# shortest trial period     = {period_min_min} min\n"
+    header += f"# longest trial period      = {period_max_min} min\n"
+    header += f"# step size of trial period = {step_min} min\n"
+    header += f"# number of bins            = {n_bins}\n"
+    header += f"#\n"
+    header += f"# results of PDM analysis\n"
+    header += f"#\n"
+    header += f"# trial period (day), trial period (hr), trial period (min), "
+    header += f"total variance\n"
+    header += f"#\n"
+    fh_out.write (header)
 
-# function to be used for least-squares fitting
-def func (x, a, b, c):
-    y = a * (x - b)**2 + c
-    return y
+    # initial value of trial period
+    period_day = period_min_day
 
-# least-squares fitting using scipy.optimize.curve_fit
-popt, pcov = scipy.optimize.curve_fit (func, data_fit_per, data_fit_var, \
-                                       p0=init, method='dogbox')
+    # period search
+    while (period_day < period_max_day):
+        # calculation of phase with assumed period
+        data_phase = numpy.array ([])
+        for i in range ( len (data_mjd) ):
+            phase = (data_mjd[i] - data_mjd[0]) / period_day
+            phase -= int (phase)
+            data_phase = numpy.append (data_phase, phase)
 
-# fitted coefficients
-print ("popt:")
-print (popt)
+        # initialization of parameter
+        total_variance = 0.0
+        
+        # calculation of variance
+        for i in range (n_bins):
+            # range of bin
+            bin_min = i / n_bins
+            bin_max = (i + 1) / n_bins
 
-# covariance matrix
-print ("pcov:")
-print (pcov)
+            # finding data within the bin
+            data_bin = numpy.array ([])
+            for j in range ( len (data_phase) ):
+                if ( (data_phase[j] >= bin_min) and (data_phase[j] < bin_max) ):
+                    data_bin = numpy.append (data_bin, data_mag[j])
+                    
+            # if no data in the bin, then we skip.
+            if (len (data_bin) == 0):
+                continue
 
-# fitted a and b
-a_fitted = popt[0]
-b_fitted = popt[1]
-c_fitted = popt[2]
+            # variance
+            variance_in_bin = numpy.var (data_bin)
+            # sum of variance
+            total_variance += variance_in_bin
 
-# degree of freedom
-dof = len (data_fit_per) - 3
-print (f"dof = {dof}")
+        # writing data to file
+        output = f"{period_day:12.10f} {period_day * 24.0:12.8f} " \
+            + f"{period_day * 24.0 * 60.0:12.6f} {total_variance:10.6f}\n"
+        fh_out.write (output)
 
-# residual
-residual = data_fit_var - func (data_fit_per, a_fitted, b_fitted, c_fitted)
-reduced_chi2 = (residual**2).sum () / dof
-print (f"reduced chi^2 = {reduced_chi2}")
-
-# errors of a and b
-a_err = numpy.sqrt (pcov[0][0])
-b_err = numpy.sqrt (pcov[1][1])
-c_err = numpy.sqrt (pcov[2][2])
-print (f"a = {a_fitted:13.6f} +/- {a_err:13.6f} ({a_err/a_fitted*100:6.2f} %)")
-print (f"b = {b_fitted:13.6f} +/- {b_err:13.6f} ({b_err/b_fitted*100:6.2f} %)")
-print (f"c = {c_fitted:13.6f} +/- {c_err:13.6f} ({c_err/c_fitted*100:6.2f} %)")
-
-# fitted line
-fitted_x = numpy.linspace (x_min, x_max, 10**3)
-fitted_y = func (fitted_x, a_fitted, b_fitted, c_fitted)
-
-# making fig and ax
-fig    = matplotlib.figure.Figure ()
-canvas = matplotlib.backends.backend_agg.FigureCanvasAgg (fig)
-ax     = fig.add_subplot (111)
-
-# labels
-ax.set_xlabel ('Period [hr]')
-ax.set_ylabel ('Variance')
-
-# range of plot
-ax.set_xlim (x_min - 0.001, x_max + 0.001)
-ax.set_ylim (c_fitted - 0.1, func (x_max, a_fitted, b_fitted, c_fitted) * 1.5 )
-
-# plotting a figure
-ax.plot (data_all_per, data_all_var, \
-         linestyle='-', linewidth=5, color='blue', \
-         label='result of PDM analysis')
-ax.plot (fitted_x, fitted_y, \
-         linestyle=':', linewidth=3, color='red', \
-         label='fitted curve by curve_fit')
-ax.legend ()
-
-# saving the figure to a file
-fig.savefig (file_output, dpi=150)
+        # next trial period
+        period_day += step_day
