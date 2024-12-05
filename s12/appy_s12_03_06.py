@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/05/03 12:32:09 (UT+8) daisuke>
+# Time-stamp: <2024/12/05 12:18:33 (UT+8) daisuke>
 #
 
 # importing numpy module
@@ -26,7 +26,7 @@ period_max_min = 850.0
 period_max_day = period_max_min / (60.0 * 24.0)
 
 # step size of trial period
-step_min = 0.002
+step_min = 0.02
 step_day = step_min / (60.0 * 24.0)
 
 # number of bins
