@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/05/02 08:20:05 (UT+8) daisuke>
+# Time-stamp: <2024/12/05 12:49:22 (UT+8) daisuke>
 #
 
 # importing argparse module
@@ -42,4 +42,4 @@ for filename in list_files:
     if (existence):
         print (f"the file '{filename}' exists!")
     else:
-        print (f"the file '{filename}' does not exist!")
+        print (f"the file '{filename}' does NOT exist!")
