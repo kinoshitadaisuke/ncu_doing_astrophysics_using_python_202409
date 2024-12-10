@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/05/10 13:00:40 (UT+8) daisuke>
+# Time-stamp: <2024/12/10 10:17:18 (UT+8) daisuke>
 #
 
 # importing argparse module
@@ -23,6 +23,7 @@ import numpy.ma
 import astropy.io.fits
 import astropy.stats
 import astropy.convolution
+import astropy.visualization
 
 # importing photutils module
 import photutils.background
