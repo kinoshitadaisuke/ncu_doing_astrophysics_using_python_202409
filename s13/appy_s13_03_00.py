@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/05/10 13:47:43 (UT+8) daisuke>
+# Time-stamp: <2024/12/10 11:28:31 (UT+8) daisuke>
 #
 
 # importing argparse module
@@ -105,12 +105,12 @@ elif (name_resolver == 'ned'):
     query_result = astroquery.ipac.ned.Ned.query_object (target_name)
 
 # RA and Dec
-RA  = query_result['RA']
-Dec = query_result['DEC']
+RA  = query_result['ra']
+Dec = query_result['dec']
 
 # coordinate
 if (name_resolver == 'simbad'):
-    coord = astropy.coordinates.SkyCoord (RA[0], Dec[0], unit=(u_ha, u_deg))
+    coord = astropy.coordinates.SkyCoord (RA[0], Dec[0], unit=(u_deg, u_deg))
 elif (name_resolver == 'ned'):
     coord = astropy.coordinates.SkyCoord (RA[0], Dec[0], unit=(u_deg, u_deg))
 
