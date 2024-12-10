@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/05/09 09:20:37 (UT+8) daisuke>
+# Time-stamp: <2024/12/10 09:02:59 (UT+8) daisuke>
 #
 
 # importing argparse module
@@ -127,14 +127,17 @@ print (f'# finished generating background image!')
 print (f'# now, generating source table...')
 
 # making a source table
-fwhm_sigma            = 2.0 * numpy.sqrt (2.0 * numpy.log (2.0) )
-source_table          = astropy.table.Table ()
-source_table['x_0']   = numpy.random.normal (image_size_x * 0.5, \
-                                             image_size_x * 0.1, nstar)
-source_table['y_0']   = numpy.random.normal (image_size_y * 0.5, \
-                                             image_size_y * 0.1, nstar)
-source_table['sigma'] = numpy.array ([psf_fwhm] * nstar) / fwhm_sigma
-source_table['flux']  = numpy.random.uniform (flux_max * 0.1, flux_max, nstar)
+fwhm_sigma = 2.0 * numpy.sqrt (2.0 * numpy.log (2.0) )
+sigma_pix  = psf_fwhm / fwhm_sigma
+flux_min   = flux_max * 0.1
+sources    = photutils.datasets.make_model_params (image_size, nstar, \
+                                                   x_name='x_mean', \
+                                                   y_name='y_mean', \
+                                                   min_separation=10.0, \
+                                                   amplitude=(flux_min, \
+                                                              flux_max), \
+                                                   sigma=(sigma_pix, \
+                                                          sigma_pix) )
 
 # printing status
 print (f'# finished generating source table!')
@@ -142,18 +145,21 @@ print (f'# finished generating source table!')
 # printing source table
 print (f'# source_table:')
 for i in range (nstar):
-    print (f'#   a star of flux {source_table['flux'][i]:8.1f} ADU', \
-           f'at (x,y)=({source_table['x_0'][i]:7.1f},', \
-           f'{source_table['y_0'][i]:7.1f})')
-print (f'# total number of stars in source table = {len (source_table)}')
+    print (f'#   a star of peak flux {sources["amplitude"][i]:8.1f} ADU', \
+           f'at (x,y)=({sources["x_mean"][i]:7.1f},', \
+           f'{sources["y_mean"][i]:7.1f})')
+print (f'# total number of stars in source table = {len (sources)}')
 
 # printing status
 print (f'# now, generating stars...')
 
 # generating stars
-image_star \
-    = photutils.datasets.make_gaussian_prf_sources_image (image_size, \
-                                                          source_table)
+psf_model  = astropy.modeling.models.Gaussian2D ()
+image_star = photutils.datasets.make_model_image (image_size, \
+                                                  psf_model, \
+                                                  sources, \
+                                                  x_name='x_mean', \
+                                                  y_name='y_mean')
 
 # printing status
 print (f'# finished generating stars!')
