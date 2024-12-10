@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/05/11 19:24:39 (UT+8) daisuke>
+# Time-stamp: <2024/12/10 13:47:48 (UT+8) daisuke>
 #
 
 # importing argparse module
@@ -156,8 +156,12 @@ table_stars['y_stddev']  = list_psf_y
 table_stars['theta']     = list_theta
 
 # generating stars
-image_stars = photutils.datasets.make_gaussian_sources_image (image_shape, \
-                                                              table_stars)
+psf_model   = astropy.modeling.models.Gaussian2D ()
+image_stars = photutils.datasets.make_model_image (image_shape, \
+                                                   psf_model, \
+                                                   table_stars, \
+                                                   x_name='x_mean', \
+                                                   y_name='y_mean')
 # generating sky background
 image_sky = photutils.datasets.make_noise_image (image_shape, \
                                                  distribution='gaussian', \
