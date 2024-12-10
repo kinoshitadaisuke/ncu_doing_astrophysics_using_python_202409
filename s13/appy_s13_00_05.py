@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/05/09 09:55:08 (UT+8) daisuke>
+# Time-stamp: <2024/12/10 09:42:22 (UT+8) daisuke>
 #
 
 # importing argparse module
@@ -41,12 +41,12 @@ parser.add_argument ('-f', '--flux-min', type=float, default=1000.0, \
                      help='minimum flux of stars (default: 1000)')
 parser.add_argument ('-p', '--fwhm-psf', type=float, default=3.5, \
                      help='FWHM of PSF in pixel (default: 3.5)')
-parser.add_argument ('-d', '--fwhm-stddev', type=float, default=0.1, \
-                     help='stddev of FWHM distribution in pixel (default: 0.1)')
+parser.add_argument ('-d', '--fwhm-width', type=float, default=0.1, \
+                     help='width of FWHM distribution in pixel (default: 0.1)')
 parser.add_argument ('-q', '--fwhm-psf-gal', type=float, default=8.0, \
                      help='FWHM of galaxy PSF in pixel (default: 8)')
-parser.add_argument ('-r', '--fwhm-psf-gal-stddev', type=float, default=4.0, \
-                     help='stddev of FWHM of galaxy PSF in pixel (default: 4)')
+parser.add_argument ('-r', '--fwhm-psf-gal-width', type=float, default=4.0, \
+                     help='width of FWHM distribution of galaxy PSF in pixel (default: 4)')
 parser.add_argument ('-s', '--sky', type=float, default=1000.0, \
                      help='sky background level in ADU (default: 1000)')
 parser.add_argument ('-e', '--sky-stddev', type=float, default=30.0, \
@@ -72,14 +72,14 @@ ngals  = args.ngalaxies
 flux_min = args.flux_min
 
 # FWHM of PSF
-fwhm_x            = args.fwhm_psf
-fwhm_y            = args.fwhm_psf
-fwhm_stddev_x     = args.fwhm_stddev
-fwhm_stddev_y     = args.fwhm_stddev
-fwhm_gal_x        = args.fwhm_psf_gal
-fwhm_gal_y        = args.fwhm_psf_gal
-fwhm_gal_stddev_x = args.fwhm_psf_gal_stddev
-fwhm_gal_stddev_y = args.fwhm_psf_gal_stddev
+fwhm_x           = args.fwhm_psf
+fwhm_y           = args.fwhm_psf
+fwhm_width_x     = args.fwhm_width
+fwhm_width_y     = args.fwhm_width
+fwhm_gal_x       = args.fwhm_psf_gal
+fwhm_gal_y       = args.fwhm_psf_gal
+fwhm_gal_width_x = args.fwhm_psf_gal_width
+fwhm_gal_width_y = args.fwhm_psf_gal_width
 
 # sky background level and stddev
 sky_mean   = args.sky
@@ -131,55 +131,47 @@ if (path_log.exists ()):
 
 # printing status
 print (f'Now, generating source table for stars and galaxies...')
-    
-# generating a new astropy table
-table_stars = astropy.table.Table ()
-table_gals  = astropy.table.Table ()
 
-# random number generator
-rng = numpy.random.default_rng ()
+# PSF model
+psf_model = astropy.modeling.models.Gaussian2D ()
 
-# generating random numbers for stars
-position_x = rng.uniform (0, image_size_x, nstars)
-position_y = rng.uniform (0, image_size_y, nstars)
-theta_deg  = rng.uniform (0, 360, nstars)
-psf_x      = rng.normal (loc=fwhm_x, scale=fwhm_stddev_x, size=nstars)
-psf_y      = rng.normal (loc=fwhm_y, scale=fwhm_stddev_y, size=nstars)
-powerlaw   = rng.power (1.5, size=nstars)
-flux       = flux_min / powerlaw
+# making source table for stars
+flux_max   = flux_min * 30.0
+fwhm_x_min = fwhm_x - fwhm_width_x
+fwhm_x_max = fwhm_x + fwhm_width_x
+fwhm_y_min = fwhm_y - fwhm_width_y
+fwhm_y_max = fwhm_y + fwhm_width_y
+stars = photutils.datasets.make_model_params (image_shape, \
+                                              nstars, \
+                                              x_name='x_mean', \
+                                              y_name='y_mean', \
+                                              min_separation=10.0, \
+                                              amplitude=(flux_min, \
+                                                         flux_max), \
+                                              x_stddev=(fwhm_x_min, \
+                                                        fwhm_x_max), \
+                                              y_stddev=(fwhm_y_min, \
+                                                        fwhm_y_max), \
+                                              theta=(0.0, 2.0 * numpy.pi) )
 
-# generating random numbers for galaxies
-centre_gal_x   = rng.uniform (image_size_x * 0.3, image_size_x * 0.7)
-centre_gal_y   = rng.uniform (image_size_y * 0.3, image_size_y * 0.7)
-position_gal_x = rng.normal (loc=centre_gal_x, scale=300, size=ngals)
-position_gal_y = rng.normal (loc=centre_gal_y, scale=300, size=ngals)
-theta_gal_deg  = rng.uniform (0, 360, ngals)
-psf_gal_x      = rng.normal (loc=fwhm_gal_x, scale=fwhm_gal_stddev_x, \
-                             size=ngals)
-psf_gal_y      = rng.normal (loc=fwhm_gal_y, scale=fwhm_gal_stddev_y, \
-                             size=ngals)
-powerlaw_gal   = rng.power (2.0, size=ngals)
-flux_gal       = flux_min * 3 / powerlaw_gal
-
-# conversion from degree to radian
-theta_rad     = numpy.radians (theta_deg)
-theta_gal_rad = numpy.radians (theta_gal_deg)
-
-# adding data to the table of stars
-table_stars['amplitude'] = flux
-table_stars['x_mean']    = position_x
-table_stars['y_mean']    = position_y
-table_stars['x_stddev']  = psf_x
-table_stars['y_stddev']  = psf_y
-table_stars['theta']     = theta_rad
-
-# adding data to the table of galaxies
-table_gals['amplitude'] = flux_gal
-table_gals['x_mean']    = position_gal_x
-table_gals['y_mean']    = position_gal_y
-table_gals['x_stddev']  = psf_gal_x
-table_gals['y_stddev']  = psf_gal_y
-table_gals['theta']     = theta_gal_rad
+# making source table for galaxies
+flux_max       = flux_min * 50.0
+fwhm_gal_x_min = fwhm_gal_x - fwhm_gal_width_x
+fwhm_gal_x_max = fwhm_gal_x + fwhm_gal_width_x
+fwhm_gal_y_min = fwhm_gal_y - fwhm_gal_width_y
+fwhm_gal_y_max = fwhm_gal_y + fwhm_gal_width_y
+galaxies = photutils.datasets.make_model_params (image_shape, \
+                                                 ngals, \
+                                                 x_name='x_mean', \
+                                                 y_name='y_mean', \
+                                                 min_separation=10.0, \
+                                                 amplitude=(flux_min, \
+                                                            flux_max), \
+                                                 x_stddev=(fwhm_gal_x_min, \
+                                                           fwhm_gal_y_max), \
+                                                 y_stddev=(fwhm_gal_x_min, \
+                                                           fwhm_gal_y_max), \
+                                                 theta=(0.0, 2.0 * numpy.pi) )
 
 # printing status
 print (f'Finished generating source table for stars and galaxies!')
@@ -200,12 +192,12 @@ with open (file_log, 'w') as fh_log:
     fh_log.write (f'#   flux_min          = {flux_min}\n')
     fh_log.write (f'#   fwhm_x            = {fwhm_x}\n')
     fh_log.write (f'#   fwhm_y            = {fwhm_y}\n')
-    fh_log.write (f'#   fwhm_stddev_x     = {fwhm_stddev_x}\n')
-    fh_log.write (f'#   fwhm_stddev_y     = {fwhm_stddev_y}\n')
+    fh_log.write (f'#   fwhm_width_x      = {fwhm_width_x}\n')
+    fh_log.write (f'#   fwhm_width_y      = {fwhm_width_y}\n')
     fh_log.write (f'#   fwhm_gal_x        = {fwhm_gal_x}\n')
     fh_log.write (f'#   fwhm_gal_y        = {fwhm_gal_y}\n')
-    fh_log.write (f'#   fwhm_gal_stddev_x = {fwhm_gal_stddev_x}\n')
-    fh_log.write (f'#   fwhm_gal_stddev_y = {fwhm_gal_stddev_y}\n')
+    fh_log.write (f'#   fwhm_gal_width_x  = {fwhm_gal_width_x}\n')
+    fh_log.write (f'#   fwhm_gal_width_y  = {fwhm_gal_width_y}\n')
     fh_log.write (f'#   sky_mean          = {sky_mean}\n')
     fh_log.write (f'#   sky_stddev        = {sky_stddev}\n')
     fh_log.write (f'#   file_output       = {file_output}\n')
@@ -213,12 +205,12 @@ with open (file_log, 'w') as fh_log:
     fh_log.write (f'#\n')
     fh_log.write (f'# information of stars\n')
     fh_log.write (f'#\n')
-    astropy.io.ascii.write (table_stars, fh_log, format='commented_header')
+    astropy.io.ascii.write (stars, fh_log, format='commented_header')
     # information of galaxies
     fh_log.write (f'#\n')
     fh_log.write (f'# information of galaxies\n')
     fh_log.write (f'#\n')
-    astropy.io.ascii.write (table_gals, fh_log, format='commented_header')
+    astropy.io.ascii.write (galaxies, fh_log, format='commented_header')
 
 # printing status
 print (f'Finished writing source table into log file!')
@@ -227,8 +219,11 @@ print (f'Finished writing source table into log file!')
 print (f'Now, generating synthetic stars...')
     
 # generating stars
-image_stars = photutils.datasets.make_gaussian_sources_image (image_shape, \
-                                                              table_stars)
+image_stars = photutils.datasets.make_model_image (image_shape, \
+                                                   psf_model, \
+                                                   stars, \
+                                                   x_name='x_mean', \
+                                                   y_name='y_mean')
 
 # printing status
 print (f'Finished generating synthetic stars!')
@@ -237,8 +232,11 @@ print (f'Finished generating synthetic stars!')
 print (f'Now, generating synthetic galaxies...')
 
 # generating galaxies
-image_gals = photutils.datasets.make_gaussian_sources_image (image_shape, \
-                                                             table_gals)
+image_gals = photutils.datasets.make_model_image (image_shape, \
+                                                  psf_model, \
+                                                  galaxies, \
+                                                  x_name='x_mean', \
+                                                  y_name='y_mean')
 
 # printing status
 print (f'Finished generating synthetic galaxies!')
