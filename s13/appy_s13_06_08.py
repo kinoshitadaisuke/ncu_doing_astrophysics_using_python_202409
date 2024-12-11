@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/05/12 20:32:57 (UT+8) daisuke>
+# Time-stamp: <2024/12/11 08:21:41 (UT+8) daisuke>
 #
 
 # importing argparse module
@@ -208,8 +208,11 @@ for i in range ( len (list_matched_1) ):
 # byte swap
 # data stored in FITS file is network byte-order (big endian).
 # Intel/AMD CPUs use little endian.
-image1 = image1.byteswap ().newbyteorder ()
-image2 = image2.byteswap ().newbyteorder ()
+#
+# if you are using big endian CPU, comment out following two lines.
+#
+image1 = image1.byteswap ().view (image1.dtype.newbyteorder ('S'))
+image2 = image2.byteswap ().view (image2.dtype.newbyteorder ('S'))
 
 # aligning 1st image to 2nd image
 st = skimage.transform.SimilarityTransform (scale=transf.scale, \
