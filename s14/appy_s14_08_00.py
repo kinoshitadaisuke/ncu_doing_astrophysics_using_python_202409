@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/12/22 21:07:47 (UT+8) daisuke>
+# Time-stamp: <2024/12/23 13:00:22 (UT+8) daisuke>
 #
 
 # importing gzip module
@@ -42,7 +42,7 @@ majorbody = {
 }
 
 # number of asteroids to process
-n_asteroids = 5000
+n_asteroids = 10000
 
 # opening file
 with gzip.open (file_mpcorb, 'rb') as fh:
