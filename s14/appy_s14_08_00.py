@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/12/23 13:00:22 (UT+8) daisuke>
+# Time-stamp: <2024/12/25 10:22:54 (UT+8) daisuke>
 #
 
 # importing gzip module
@@ -177,18 +177,85 @@ with gzip.open (file_mpcorb, 'rb') as fh:
             # semimajor axis
             a = float (line[92:103])
 
-            # if epoch is no same as (1) Ceres, then skip
-            if (epoch != epoch_ceres):
-                continue
-            
+            # year
+            if (epoch_packed[0] == 'I'):
+                year0 = 1800
+            elif (epoch_packed[0] == 'J'):
+                year0 = 1900
+            elif (epoch_packed[0] == 'K'):
+                year0 = 2000
+            year1 = int (epoch_packed[1:3])
+            year = year0 + year1
+            # month
+            try:
+                month = int (epoch_packed[3])
+            except:
+                if (epoch_packed[3] == 'A'):
+                    month = 10
+                elif (epoch_packed[3] == 'B'):
+                    month = 11
+                elif (epoch_packed[3] == 'C'):
+                    month = 12
+            # day
+            try:
+                day = int (epoch_packed[4])
+            except:
+                if (epoch_packed[4] == 'A'):
+                    day = 10
+                elif (epoch_packed[4] == 'B'):
+                    day = 11
+                elif (epoch_packed[4] == 'C'):
+                    day = 12
+                elif (epoch_packed[4] == 'D'):
+                    day = 13
+                elif (epoch_packed[4] == 'E'):
+                    day = 14
+                elif (epoch_packed[4] == 'F'):
+                    day = 15
+                elif (epoch_packed[4] == 'G'):
+                    day = 16
+                elif (epoch_packed[4] == 'H'):
+                    day = 17
+                elif (epoch_packed[4] == 'I'):
+                    day = 18
+                elif (epoch_packed[4] == 'J'):
+                    day = 19
+                elif (epoch_packed[4] == 'K'):
+                    day = 20
+                elif (epoch_packed[4] == 'L'):
+                    day = 21
+                elif (epoch_packed[4] == 'M'):
+                    day = 22
+                elif (epoch_packed[4] == 'N'):
+                    day = 23
+                elif (epoch_packed[4] == 'O'):
+                    day = 24
+                elif (epoch_packed[4] == 'P'):
+                    day = 25
+                elif (epoch_packed[4] == 'Q'):
+                    day = 26
+                elif (epoch_packed[4] == 'R'):
+                    day = 27
+                elif (epoch_packed[4] == 'S'):
+                    day = 28
+                elif (epoch_packed[4] == 'T'):
+                    day = 29
+                elif (epoch_packed[4] == 'U'):
+                    day = 30
+                elif (epoch_packed[4] == 'V'):
+                    day = 31
+            # epoch in YYYY-MM-DD hh:mm:ss format
+            t_epoch = f'{year:04d}-{month:02d}-{day:02d} 00:00:00'
+           
             # adding data to the dictionary
-            dic_elements[number]         = {}
-            dic_elements[number]['a']    = a
-            dic_elements[number]['e']    = e
-            dic_elements[number]['i']    = i_rad
-            dic_elements[number]['peri'] = peri_rad
-            dic_elements[number]['node'] = node_rad
-            dic_elements[number]['M']    = M_rad
+            dic_elements[number]          = {}
+            dic_elements[number]['a']     = a
+            dic_elements[number]['e']     = e
+            dic_elements[number]['i']     = i_rad
+            dic_elements[number]['peri']  = peri_rad
+            dic_elements[number]['node']  = node_rad
+            dic_elements[number]['M']     = M_rad
+            dic_elements[number]['epoch'] = t_epoch
 
             # incrementing counter
             n_obj += 1
@@ -219,7 +286,7 @@ for number in sorted (dic_elements.keys ()):
              omega=dic_elements[number]['peri'], \
              Omega=dic_elements[number]['node'], \
              M=dic_elements[number]['M'], \
-             date=t_epoch)
+             date=dic_elements[number]['epoch'])
 
 # printing status
 print (f'Finished adding asteroids to the simulation!')
