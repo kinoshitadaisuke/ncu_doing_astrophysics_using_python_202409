@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/05/24 08:55:48 (UT+8) daisuke>
+# Time-stamp: <2025/01/05 10:21:10 (UT+8) daisuke>
 #
 
 # importing astropy module
@@ -47,4 +47,4 @@ for file_data in list_files:
 for i in sorted (dic_albedo.keys ()):
     print (f'{i:6d} :', \
            f'{dic_albedo[i]["albedo"]:5.3f}', \
-           f'+/-{dic_albedo[i]["albedo_err"]:5.3f}')
+           f'+/- {dic_albedo[i]["albedo_err"]:5.3f}')
