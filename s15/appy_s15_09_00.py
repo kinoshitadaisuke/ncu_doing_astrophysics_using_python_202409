@@ -1,7 +1,7 @@
 #!/usr/pkg/bin/python3.12
 
 #
-# Time-stamp: <2024/05/28 09:11:53 (UT+8) daisuke>
+# Time-stamp: <2025/01/05 10:48:46 (UT+8) daisuke>
 #
 
 # importing argparse
@@ -53,12 +53,12 @@ u_arcmin = astropy.units.arcmin
 result_simbad = astroquery.simbad.Simbad.query_object (target)
 
 # coordinate from Simbad
-obj_ra  = result_simbad['RA'][0]
-obj_dec = result_simbad['DEC'][0]
+obj_ra  = result_simbad['ra'][0]
+obj_dec = result_simbad['dec'][0]
 
 # using skycoord of astropy
 coord = astropy.coordinates.SkyCoord (obj_ra, obj_dec, frame='icrs', \
-                                      unit=(u_ha, u_deg) )
+                                      unit=(u_deg, u_deg) )
 
 # coordinate in decimal degree
 ra_deg  = coord.ra.deg
